@@ -1,0 +1,27 @@
+# Static site — no build step. `publish` is this folder itself.
+[build]
+  publish = "."
+  command = ""
+
+# preview.html is a build artifact (a single-file copy of index.html for
+# pasting into places that want one file). Keep it out of search results.
+# The mailing-list form is a Netlify Form (the `data-netlify` attribute on it).
+# Submissions land in Site configuration > Forms — 100/month on the free tier.
+# Set up a notification there so new signups reach your inbox.
+
+[[headers]]
+  for = "/preview.html"
+  [headers.values]
+    X-Robots-Tag = "noindex"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "geolocation=(), microphone=(), camera=()"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
