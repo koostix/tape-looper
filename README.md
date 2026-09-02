@@ -15,7 +15,7 @@ Try the **complete app free for 14 days** — no account, nothing held back.
 
 **[Download Tape Looper (.dmg)](../../releases/latest/download/TapeLooper.dmg)**
 
-*macOS 14+ · Apple Silicon or Intel · ~2.4 MB*
+*Current: 1.3.2 · macOS 14+ · Apple Silicon or Intel · ~2.5 MB*
 
 ## Install (one-time first-launch step)
 
