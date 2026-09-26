@@ -108,6 +108,7 @@ body.export .start{display:none}
 
   <ol class="chapters" id="chapters"></ol>
 
+  <p class="colophon"><b>A love story in five lights.</b> A rower at dawn and the woman in rose who waves back; a meeting on the garden bridge; an umbrella in the rain; a waltz under the lanterns; and, many years later, the same lantern beside them on a bench as the fireflies rise. Their melody returns in every chapter: piano at sunrise, violin in the garden, cello in the rain, the accordion at the dance, and the cello again under the stars.</p>
   <p class="colophon">Each frame is painted from about a thousand fresh brush strokes laid over the last, sampled from a small sketch of the scene the way a painter squints at a motif. The sound is synthesized from the same score as the picture: <b>every glint on the water, every lamp, lantern beat and firefly is heard where it is seen.</b> Headphones help.</p>
 </main>
 
@@ -145,16 +146,26 @@ function keyed(keys, t) {
 
 const SCENES = [
   { id: 'titre', t0: 0, t1: 8 },
-  { id: 'aube', t0: 8, t1: 28, num: 'I', ord: 'Première lumière', fr: 'Aube', en: 'Dawn over the harbour at Le Havre' },
-  { id: 'jardin', t0: 28, t1: 48, num: 'II', ord: 'Deuxième lumière', fr: 'Le jardin d’eau', en: 'Noon in the water garden' },
-  { id: 'pluie', t0: 48, t1: 66, num: 'III', ord: 'Troisième lumière', fr: 'Pluie sur le boulevard', en: 'Evening rain as the lamps come on' },
-  { id: 'bal', t0: 66, t1: 86, num: 'IV', ord: 'Quatrième lumière', fr: 'Le bal', en: 'A lantern-lit waltz, then fireworks' },
-  { id: 'lucioles', t0: 86, t1: 104, num: 'V', ord: 'Cinquième lumière', fr: 'Lucioles', en: 'Fireflies until first light' },
+  { id: 'aube', t0: 8, t1: 28, num: 'I', ord: 'Première lumière', fr: 'Aube', en: 'A rower at sunrise, and someone who waves back' },
+  { id: 'jardin', t0: 28, t1: 48, num: 'II', ord: 'Deuxième lumière', fr: 'Le jardin d’eau', en: 'Noon on the bridge, one step closer' },
+  { id: 'pluie', t0: 48, t1: 66, num: 'III', ord: 'Troisième lumière', fr: 'Pluie sur le boulevard', en: 'Rain, lamplight, and an umbrella for two' },
+  { id: 'bal', t0: 66, t1: 86, num: 'IV', ord: 'Quatrième lumière', fr: 'Le bal', en: 'Their waltz beneath the lanterns' },
+  { id: 'lucioles', t0: 86, t1: 104, num: 'V', ord: 'Cinquième lumière', fr: 'Lucioles', en: 'Years later, fireflies until first light' },
   { id: 'fin', t0: 104, t1: DUR },
 ];
 function sceneAt(t) { for (let i = SCENES.length - 1; i >= 0; i--) if (t >= SCENES[i].t0) return i; return 0; }
 
 /* ───────────────────────── the score: one source for picture and sound ───────────────────────── */
+const CARDS = [
+  { t: 15.0, d: 5.2, fr: 'Chaque matin, il ramait vers le soleil.', en: 'Every morning, he rowed out toward the sun.' },
+  { t: 21.6, d: 5.0, fr: 'Un matin, quelqu’un lui fit signe.', en: 'One morning, someone waved back.' },
+  { t: 35.0, d: 5.6, fr: 'Elle lui montra où s’ouvrent les nénuphars.', en: 'She showed him where the water lilies open.' },
+  { t: 55.0, d: 5.4, fr: 'Ce soir-là, elle l’attendait sous le premier réverbère.', en: 'That evening, she waited for him under the first lamp.' },
+  { t: 62.7, d: 3.2, fr: 'Il avait apporté un parapluie.', en: 'He had brought an umbrella.' },
+  { t: 73.0, d: 5.2, top: true, fr: 'Et ils dansèrent jusqu’à ce que le ciel s’embrase.', en: 'And they danced until the sky caught fire.' },
+  { t: 92.8, d: 5.6, fr: 'Bien des années plus tard, ils venaient encore compter les lucioles.', en: 'Many years later, they still came to count the fireflies.' },
+  { t: 99.2, d: 4.8, fr: 'Toutes les lumières qu’on a aimées brillent encore.', en: 'Every light we have loved is still shining.' },
+];
 const VP = { x: 820, y: 330 };
 const B0 = 66.4, BAR = 1.2, BEAT = 0.4;
 const J0 = 28.5, EIGHTH = 0.25;
@@ -175,7 +186,7 @@ function lampGeom(k, side) {
   const xn = side ? 1112 : 168;
   return { s, x: VP.x + (xn - VP.x) * s, base: VP.y + (648 - VP.y) * s, head: VP.y + (648 - VP.y) * s - 318 * s };
 }
-function pedX(t) { return 1010 - (t - 48) * 23; }
+function pedX(t) { return Math.max(262, 1060 - (t - 48) * 56.2); }
 
 function buildScore() {
   const r = mulberry32(1872);
@@ -220,6 +231,7 @@ function buildScore() {
   S.glints = [];
   const pent = ['D4', 'E4', 'F#4', 'A4', 'B4', 'D5', 'E5', 'F#5', 'A5', 'B5', 'D6'];
   for (let t = 9.6; t < 27.4; t += 0.75 + r() * 0.85) {
+    if (t > 21.3 && t < 26.8) continue;
     const y = 408 + Math.pow(r(), 0.8) * 290, spread = 20 + (y - 400) * 0.35;
     const idx = clamp(Math.round((1 - (y - 405) / 300) * (pent.length - 1) + (r() - 0.5) * 1.5), 0, pent.length - 1);
     S.glints.push({ t, x: 720 + (r() - 0.5) * 2 * spread, y, v: 0.55 + r() * 0.45, note: pent[idx] });
@@ -280,7 +292,7 @@ function buildScore() {
   }
   S.drips.sort((a, b) => a.t - b.t);
   S.steps = [];
-  for (let t = 48.3, k = 0; t < 65.8; t += 0.52, k++) S.steps.push({ t, k });
+  for (let t = 48.3, k = 0; t < 62.2; t += 0.52, k++) S.steps.push({ t, k });
   S.churchBell = [62.6, 64.5];
 
   // IV. Le bal — musette waltz in D, lanterns keep time, fireworks close it
@@ -324,6 +336,7 @@ function buildScore() {
     fx: 0.15 + r() * 0.35, fy: 0.2 + r() * 0.4, p1: r() * TAU, p2: r() * TAU,
     rs: 94.5 + r() * 5, rv: 18 + r() * 26,
   });
+  S.flies[0] = { ...S.flies[0], x0: 470, y0: 498, ax: 22, ay: 12, rs: 99.2, rv: 22 };
   S.blinks = [];
   const fnotes = ['A5', 'B5', 'D6', 'E6', 'F#6', 'A6', 'B6'];
   let lastSound = 0;
@@ -346,6 +359,15 @@ function buildScore() {
   S.dawnBirds = [];
   for (let t = 100.2; t < 110; t += 0.5 + r() * 1.3) S.dawnBirds.push({ t, f0: 2600 + r() * 1800, f1: 3400 + r() * 2600, pan: r() * 1.6 - 0.8, trill: r() < 0.3 });
   S.finale = { t: 107.3 };
+  // Their theme: it returns in every chapter
+  const th = (inst, list) => list.map(([n, t, d]) => ({ t, n, d, inst }));
+  S.motif = [
+    ...th('piano', [['A4', 21.8, 0.5], ['D5', 22.3, 0.5], ['F#5', 22.8, 1], ['E5', 23.8, 0.5], ['D5', 24.3, 0.5], ['B4', 24.8, 1], ['A4', 25.8, 1.6]]),
+    ...th('violin', [['A4', 40.5, 1], ['D5', 41.5, 1], ['F#5', 42.5, 1.5], ['E5', 44.0, 1], ['D5', 45.0, 0.75], ['B4', 45.75, 0.75], ['A4', 46.5, 2.4]]),
+    ...th('cello', [['B3', 52.5, 1.2], ['E4', 53.7, 1.2], ['G4', 54.9, 1.5], ['F#4', 56.4, 0.6], ['E4', 57.0, 1.2], ['C4', 58.2, 1.2], ['B3', 59.4, 2.1], ['A3', 61.5, 1.1], ['B3', 62.6, 3.2]]),
+    ...th('cello', [['A3', 90.8, 1], ['D4', 91.8, 1], ['F#4', 92.8, 2], ['E4', 94.8, 0.8], ['D4', 95.6, 1], ['B3', 96.6, 1], ['A3', 97.6, 2.6]]),
+    ...th('piano', [['A4', 101.5, 0.6], ['D5', 102.1, 0.6], ['F#5', 102.7, 0.5], ['E5', 103.2, 0.6], ['D5', 103.8, 0.4], ['B4', 104.2, 0.5], ['A4', 104.7, 2]]),
+  ];
   return S;
 }
 
@@ -497,6 +519,22 @@ async function renderAudio(S, onProgress) {
       put(i0 + j, v * e * amp, gl, gr, snd);
     }
   }
+  function bowed(t, note, dur, amp, pan = 0, snd = 0.6, bright = 2200) {
+    const f = hz(note), i0 = I(t), rel = 0.45, n = Math.min(N - i0, Math.round((dur + rel) * SR)); if (n <= 0) return;
+    const [gl, gr] = pg(pan), inc = [-3, 3].map(c => f * Math.pow(2, c / 1200) / SR), ph = [0, 0.5];
+    const lp = new SVF(), body = new SVF(); lp.set(bright, 0.7); body.set(Math.max(900, f * 2.2), 1.4);
+    let env = 0, vib = 1;
+    for (let j = 0; j < n; j++) {
+      if ((j & 31) === 0) {
+        const tt = j / SR;
+        env = tt < 0.16 ? Math.sin(Math.PI / 2 * tt / 0.16) : tt < dur ? 1 + 0.14 * Math.sin(Math.PI * Math.min(1, (tt - 0.16) / Math.max(0.3, dur - 0.16))) : Math.pow(Math.max(0, 1 - (tt - dur) / rel), 2);
+        vib = 1 + 0.0055 * Math.sin(TAU * 5.4 * tt) * sstep(0.12, 0.45, tt);
+      }
+      let v = 0; for (let q = 0; q < 2; q++) { ph[q] += inc[q] * vib; if (ph[q] >= 1) ph[q] -= 1; v += osc(T_STR, ph[q]); }
+      lp.run(v * 0.5 + rnd() * 0.04); body.run(lp.lp);
+      put(i0 + j, (lp.lp * 0.8 + body.bp * 0.5) * env * amp, gl, gr, snd);
+    }
+  }
   const drop = (t, f0, amp, pan) => sweep(t, 0.09, f0, f0 * 1.9, amp, pan, 0.45, 'drop');
   function chirp(t, f0, f1, amp, pan, trill) {
     if (trill) { for (let k = 0; k < 5; k++) sweep(t + k * 0.045, 0.035, f0 * 1.1, f0 * 0.9, amp * 0.8, pan, 0.4); }
@@ -530,7 +568,7 @@ async function renderAudio(S, onProgress) {
     const hp = new SVF(), bp = new SVF(); hp.set(1400, 0.7); bp.set(5200, 0.6);
     const i0 = I(t0), i1 = Math.min(N, I(t1));
     for (let j = i0; j < i1; j++) {
-      const tt = j / SR, e = sstep(t0, t0 + 2, tt) * (1 - sstep(t1 - 2, t1, tt)) * level;
+      const tt = j / SR, e = sstep(t0, t0 + 2, tt) * (1 - sstep(t1 - 2, t1, tt)) * (1 - 0.55 * sstep(62.4, 65.2, tt)) * level;
       hp.run(rnd()); bp.run(hp.hp);
       const v = (hp.hp * 0.25 + bp.bp * 0.6) * e;
       L[j] += v * (1 + 0.15 * Math.sin(tt * 1.3)); R[j] += v * (1 - 0.15 * Math.sin(tt * 1.3)); SD[j] += v * 0.2;
@@ -588,6 +626,11 @@ async function renderAudio(S, onProgress) {
   rain(47.2, 66.8, 0.075); await tick();
   murmur(66, 86.2, 0.028); crickets(66, 86, 0.003, 3); crickets(86, 101.5, 0.013, 7); await tick();
   for (const p of S.pads) pad(p.t, p.dur, p.n, p.a);
+  for (const m of S.motif) {
+    if (m.inst === 'piano') piano(m.t, m.n, 0.1, 0.1, 0.55, Math.max(2.5, m.d + 2));
+    else if (m.inst === 'violin') bowed(m.t, m.n, m.d, 0.075, 0.15, 0.6, 3200);
+    else bowed(m.t, m.n, m.d, 0.085, -0.1, 0.55, 1800);
+  }
   await tick();
 
   // title & fin letters
@@ -722,7 +765,7 @@ function buildLayouts() {
     { y: 215, sag: 55, n: 12, s: 1.0 },
     { y: 292, sag: 42, n: 15, s: 0.78 },
   ].map(st => ({ ...st, lan: Array.from({ length: st.n }, (_, i) => ({ u: (i + 0.5) / st.n, c: [[255, 150, 60], [255, 95, 60], [255, 210, 100], [244, 160, 190], [160, 230, 140], [255, 185, 120]][r() * 6 | 0], p: r() * TAU })) }));
-  Lx.couples = Array.from({ length: 11 }, (_, i) => ({ th: i / 11 * TAU + r() * 0.3, dress: [[246, 240, 232], [242, 170, 190], [160, 190, 235], [250, 215, 130], [210, 160, 230]][r() * 5 | 0], rr: 0.85 + r() * 0.3, sp: r() * TAU }));
+  Lx.couples = Array.from({ length: 11 }, (_, i) => ({ th: i / 11 * TAU + r() * 0.3, dress: [[246, 240, 232], [160, 190, 235], [250, 215, 130], [200, 180, 235]][r() * 4 | 0], rr: 0.85 + r() * 0.3, sp: r() * TAU }));
   Lx.tables = Array.from({ length: 10 }, (_, i) => ({ x: i < 5 ? 20 + r() * 200 : 1060 + r() * 200, y: 452 + r() * 70, hat: [[240, 220, 160], [200, 80, 80], [250, 250, 245], [90, 110, 160]][r() * 4 | 0] }));
   Lx.stars = Array.from({ length: 130 }, () => ({ x: r() * W, y: Math.pow(r(), 1.3) * 390, s: 0.5 + r() * 1.3, p: r() * TAU, f: 1 + r() * 3 }));
   Lx.treeline = Array.from({ length: 44 }, (_, i) => ({ x: i * 30 + r() * 20, y: 370 + r() * 40, rx: 30 + r() * 50, ry: 30 + r() * 50 }));
@@ -753,6 +796,59 @@ function spark(o, x, y, s, c, a) {
   o.lineWidth = Math.max(0.8, s * 0.1); o.beginPath(); o.moveTo(x - s * 0.45, y - s * 0.45); o.lineTo(x + s * 0.45, y + s * 0.45); o.moveTo(x + s * 0.45, y - s * 0.45); o.lineTo(x - s * 0.45, y + s * 0.45); o.stroke();
 }
 function ring(o, x, y, rx, ry, c, a, lw = 2) { if (a <= 0.01) return; o.strokeStyle = rgba(c, a); o.lineWidth = lw; o.setLineDash([rx * 0.22 + 3, rx * 0.16 + 3]); o.beginPath(); o.ellipse(x, y, rx, ry, 0, 0, TAU); o.stroke(); o.setLineDash([]); }
+
+/* ───────────────────────── the two of them ───────────────────────── */
+const HER = [234, 142, 168], HER_HAT = [250, 246, 236], HIM = [38, 48, 88], HIM_HAT = [236, 204, 124], SKIN = [238, 204, 176], HAIR_OLD = [226, 226, 232];
+const tone = (c, k, dark) => k >= 1 ? c : mix(dark, c, k);
+function lady(g, x, base, s, o = {}) {
+  const k = o.k ?? 1, dk = o.dark || [24, 26, 40], dress = tone(HER, k, dk), hat = tone(HER_HAT, k, dk), skin = tone(SKIN, k, dk), fl = o.flare || 1;
+  base += o.bob || 0;
+  g.fillStyle = rgba(dress); g.beginPath(); g.moveTo(x - 5 * s, base - 60 * s); g.lineTo(x - 19 * s * fl, base); g.lineTo(x + 19 * s * fl, base); g.lineTo(x + 5 * s, base - 60 * s); g.fill();
+  ell(g, x, base - 62 * s, 7 * s, 10 * s, dress);
+  ell(g, x, base - 78 * s, 6 * s, 7 * s, skin);
+  ell(g, x, base - 84 * s, 13 * s, 3.5 * s, hat); ell(g, x, base - 87 * s, 6.5 * s, 4.5 * s, hat);
+  ell(g, x + s, base - 85.5 * s, 6.6 * s, 1.4 * s, dress);
+  g.lineCap = 'round';
+  if (o.wave) {
+    const th = lerp(2.9, 0.35 + 0.45 * Math.sin(o.t * 7), o.wave), ex = x + 5 * s + Math.sin(th) * 22 * s, ey = base - 66 * s - Math.cos(th) * 22 * s;
+    g.strokeStyle = rgba(dress); g.lineWidth = 3.4 * s; g.beginPath(); g.moveTo(x + 5 * s, base - 66 * s); g.lineTo(ex, ey); g.stroke(); ell(g, ex, ey, 2.6 * s, 2.6 * s, skin);
+  }
+  if (o.parasol) {
+    g.strokeStyle = rgba(tone([90, 70, 60], k, dk)); g.lineWidth = 1.6 * s; g.beginPath(); g.moveTo(x + 6 * s, base - 58 * s); g.lineTo(x + 12 * s, base - 100 * s); g.stroke();
+    ell(g, x + 12 * s, base - 101 * s, 30 * s, 10 * s, tone([252, 244, 240], k, dk), 1, -0.22); ell(g, x + 12 * s, base - 99 * s, 24 * s, 4 * s, tone([240, 196, 206], k, dk), 1, -0.22);
+  }
+  if (o.lantern) {
+    const lx = x + 13 * s, ly = base - 34 * s;
+    g.strokeStyle = rgba(dress); g.lineWidth = 3 * s; g.beginPath(); g.moveTo(x + 5 * s, base - 64 * s); g.lineTo(lx, ly - 7 * s); g.stroke();
+    ell(g, lx, ly, 4.5 * s, 6 * s, [255, 200, 120]);
+  }
+}
+function gent(g, x, base, s, o = {}) {
+  const k = o.k ?? 1, dk = o.dark || [24, 26, 40], coat = tone(HIM, k, dk), hat = tone(HIM_HAT, k, dk), skin = tone(SKIN, k, dk);
+  base += o.bob || 0;
+  g.fillStyle = rgba(tone([28, 30, 44], k, dk)); g.fillRect(x - 7 * s, base - 30 * s, 5.5 * s, 30 * s); g.fillRect(x + 1.5 * s, base - 30 * s, 5.5 * s, 30 * s);
+  ell(g, x, base - 50 * s, 11 * s, 24 * s, coat);
+  ell(g, x, base - 78 * s, 6 * s, 7 * s, skin);
+  ell(g, x, base - 84 * s, 12 * s, 3 * s, hat); g.fillStyle = rgba(hat); g.fillRect(x - 6.5 * s, base - 91 * s, 13 * s, 7 * s);
+  g.fillStyle = rgba(tone([40, 40, 64], k, dk)); g.fillRect(x - 6.5 * s, base - 87 * s, 13 * s, 2 * s);
+}
+function seatedGent(g, x, y, s, o = {}) {
+  const k = o.k ?? 1, dk = o.dark || [24, 26, 40], coat = tone(HIM, k, dk), hat = tone(HIM_HAT, k, dk), skin = tone(SKIN, k, dk), hair = tone(HAIR_OLD, k, dk);
+  ell(g, x + 12 * s, y - 3 * s, 14 * s, 6 * s, coat);
+  g.fillStyle = rgba(tone([28, 30, 44], k, dk)); g.fillRect(x + 20 * s, y - 2 * s, 6 * s, 22 * s);
+  ell(g, x, y - 24 * s, 10 * s, 22 * s, coat);
+  ell(g, x + s, y - 52 * s, 6 * s, 7 * s, skin); ell(g, x - s, y - 54 * s, 6 * s, 4 * s, hair);
+  ell(g, x + s, y - 58 * s, 12 * s, 3 * s, hat); g.fillStyle = rgba(hat); g.fillRect(x - 5.5 * s, y - 65 * s, 13 * s, 7 * s);
+  g.strokeStyle = rgba(tone([70, 52, 40], k, dk)); g.lineWidth = 2.4 * s; g.lineCap = 'round'; g.beginPath(); g.moveTo(x + 14 * s, y - 14 * s); g.lineTo(x + 30 * s, y + 22 * s); g.stroke();
+}
+function seatedLady(g, x, y, s, o = {}) {
+  const k = o.k ?? 1, dk = o.dark || [24, 26, 40], dress = tone(HER, k, dk), hat = tone(HER_HAT, k, dk), skin = tone(SKIN, k, dk), hair = tone(HAIR_OLD, k, dk), lean = o.lean || 0;
+  ell(g, x + 10 * s, y + 4 * s, 17 * s, 14 * s, dress);
+  ell(g, x - lean * 7 * s, y - 22 * s, 8.5 * s, 19 * s, dress, 1, -0.4 * lean);
+  const hx = x - lean * 22 * s, hy = y - 48 * s + lean * 7 * s;
+  ell(g, hx, hy, 6 * s, 7 * s, skin); ell(g, hx + s, hy - 2 * s, 6.5 * s, 4 * s, hair);
+  ell(g, hx, hy - 6 * s, 13 * s, 3.5 * s, hat, 1, -0.3 * lean); ell(g, hx, hy - 9 * s, 6.5 * s, 4.5 * s, hat, 1, -0.3 * lean);
+}
 
 /* ───────────────────────── picture: scenes ───────────────────────── */
 function makeScenes(S, Lx, film) {
@@ -788,6 +884,7 @@ function makeScenes(S, Lx, film) {
     const lean = ph < 0 ? 0 : ph < 0.35 ? -0.35 + 0.7 * (ph / 0.35) : 0.35 - 0.7 * ((ph - 0.35) / 0.65);
     ell(g, x + 2 * s + lean * 8 * s, y - 20 * s, 9 * s, 18 * s, c, 1, lean * 0.5);
     ell(g, x + 4 * s + lean * 16 * s, y - 42 * s, 6.5 * s, 6.5 * s, c);
+    ell(g, x + 4 * s + lean * 16 * s, y - 48 * s, 12 * s, 3 * s, mix(c, HIM_HAT, 0.6)); ell(g, x + 4 * s + lean * 16 * s, y - 51 * s, 6 * s, 4 * s, mix(c, HIM_HAT, 0.6));
     if (ph >= 0) {
       const pull = ph < 0.35, u = pull ? ph / 0.35 : (ph - 0.35) / 0.65;
       const th = pull ? lerp(0.35, 2.7, u) : lerp(2.7, 0.35, u), dip = pull ? 26 : 8 + 6 * Math.sin(Math.PI * u);
@@ -830,6 +927,7 @@ function makeScenes(S, Lx, film) {
     g.fillStyle = rgba(tc); g.fillRect(0, 400, W, 40);
     vgrad(g, 430, H, [[0, mix('#10231c', '#40603a', q)], [1, mix('#08140f', '#263d24', q)]]);
     ell(g, 640, 478, 560, 10, mix('#1d2e58', '#f2b890', q), 0.55);
+    ell(g, 370, 640, 340, 112, mix('#0f2019', '#3a5a34', q));
     g.lineCap = 'round';
     const bc = mix('#1f3d2e', '#7f9a50', q);
     for (const b of Lx.blades) {
@@ -838,6 +936,66 @@ function makeScenes(S, Lx, film) {
       g.beginPath(); g.moveTo(b.x, b.y); g.quadraticCurveTo(b.x + sway * 0.3, b.y - b.len * 0.5, b.x + sway, b.y - b.len); g.stroke();
     }
   }
+
+  const deckY = x => { const u = (x - 100) / 1080; return 262 - 280 * u * (1 - u); };
+  const herBoatX = t => 900 - clamp(t - 8, 0, 20) * 11;
+  const herBoatY = t => 486 + Math.sin(t * 1.3 + 1) * 2;
+  function charsAube(g, t, lt) {
+    const p = clamp(lt / 20, 0, 1), hx = herBoatX(t), hy = herBoatY(t), s = 0.62;
+    g.fillStyle = '#233244'; g.beginPath(); g.ellipse(hx, hy, 60 * s, 11 * s, 0, 0, Math.PI); g.fill(); g.fillRect(hx - 60 * s, hy - 4 * s, 120 * s, 5 * s);
+    ell(g, hx, hy + 16 * s, 56 * s, 8 * s, '#29394a', 0.45);
+    g.strokeStyle = '#233244'; g.lineWidth = 3 * s; g.beginPath(); g.moveTo(hx + 46 * s, hy - 4 * s); g.lineTo(hx + 46 * s, hy - 26 * s); g.stroke();
+    ell(g, hx + 46 * s, hy - 30 * s, 5 * s, 7 * s, [255, 196, 110]);
+    const wave = sstep(21.6, 22.1, t) * (1 - sstep(25.6, 26.3, t));
+    lady(g, hx - 8 * s, hy - 3 * s, s, { k: 0.5 + 0.4 * p, dark: [34, 48, 62], wave, t });
+    const bx = boatX(t, S);
+    rowBoat(g, bx, 566 + Math.sin(t * 1.7) * 3, 1, oarPhase(t, S));
+    return [Math.min(bx - 110, hx - 60), 400, Math.max(bx + 110, hx + 60), 600];
+  }
+  function charsJardin(g, t) {
+    const m1 = sstep(29.5, 46.3, t), m2 = sstep(30.5, 46.3, t), s = 0.72, walk = 1 - sstep(45.6, 46.3, t);
+    const hx = lerp(330, 616, m1), sx = lerp(960, 664, m2);
+    const bob = -1.6 * s * Math.abs(Math.sin(Math.PI * (t - J0) / 0.75)) * walk, bob2 = -1.6 * s * Math.abs(Math.sin(Math.PI * (t - J0 + 0.3) / 0.75)) * walk;
+    const hy = deckY(hx) - 9, sy = deckY(sx) - 9;
+    gent(g, hx, hy, s, { bob });
+    lady(g, sx, sy, s, { bob: bob2, parasol: true });
+    if (t > 46.2) { g.strokeStyle = rgba(SKIN); g.lineWidth = 3 * s; g.lineCap = 'round'; g.beginPath(); g.moveTo(hx + 9 * s, hy - 44 * s); g.lineTo(sx - 7 * s, sy - 46 * s); g.stroke(); }
+    return [hx - 30, 90, sx + 50, 290];
+  }
+  function charsPluie(g, t) {
+    const px = pedX(t), arr = sstep(62.0, 62.7, t), s = 1.5;
+    const ph = ((t - 48.3) / 0.52) % 1, bob = -4 * Math.abs(Math.sin(Math.PI * ph)) * (1 - arr);
+    ell(g, 205, 684, 30, 7, [26, 28, 40], 0.5); ell(g, px, 686, 32, 7, [26, 28, 40], 0.5);
+    g.fillStyle = 'rgba(214,150,170,0.25)'; g.fillRect(190, 686, 30, 40);
+    lady(g, 205, 678, s, { k: 0.72, dark: [40, 40, 62], lantern: true, t });
+    gent(g, px, 680, s, { k: 0.55, dark: [30, 32, 46], bob });
+    const ux = px - 30 * arr, uy = 680 - 104 * s + bob, rx = 64 + 16 * arr;
+    g.strokeStyle = '#1d1f2c'; g.lineWidth = 3; g.lineCap = 'round'; g.beginPath(); g.moveTo(px + 6, 680 - 54 * s + bob); g.lineTo(ux, uy); g.stroke();
+    g.fillStyle = '#262a42'; g.beginPath(); g.ellipse(ux, uy, rx, 30, 0, Math.PI, TAU); g.fill();
+    return [140, uy - 40, Math.max(px, 300) + 90, H];
+  }
+  function charsBal(g, t) {
+    const s = 2.0, cx = 640, cy = 702, sp = TAU * (t - B0) / (2 * BAR);
+    const dx = Math.cos(sp) * 12 * s, dz = Math.sin(sp), flare = 1 + 0.3 * beatPulse(t);
+    const her = () => lady(g, cx + dx, cy, s, { flare }), him = () => gent(g, cx - dx, cy + 2, s);
+    if (dz > 0) { him(); her(); } else { her(); him(); }
+    return [cx - 110, cy - 200, cx + 110, H];
+  }
+  function charsBench(g, t) {
+    const q = dawnQ(t), k = 0.5 + 0.45 * q, dk = [14, 20, 24];
+    g.fillStyle = rgba(tone([96, 70, 52], k, dk));
+    g.fillRect(262, 512, 200, 8); g.fillRect(270, 512, 6, 40); g.fillRect(448, 512, 6, 40);
+    g.fillRect(262, 550, 200, 9); g.fillRect(270, 550, 7, 30); g.fillRect(447, 550, 7, 30);
+    seatedGent(g, 326, 550, 1.7, { k, dark: dk });
+    seatedLady(g, 388, 550, 1.7, { k, dark: dk, lean: sstep(93.2, 95.4, t) });
+    g.fillStyle = rgba(tone([40, 36, 34], k, dk)); g.fillRect(476, 578, 16, 4);
+    ell(g, 484, 566, 8, 11, [255, 200, 120]);
+    return [230, 410, 510, 600];
+  }
+  const benchLight = (o, t, f) => {
+    const lf = (1 - 0.65 * sstep(104, 110.5, t)) * f;
+    glow(o, 484, 562, 150, [255, 180, 100], 0.55 * lf); glow(o, 484, 566, 20, [255, 236, 190], 0.95 * lf);
+  };
 
   return {
     titre: {
@@ -857,7 +1015,7 @@ function makeScenes(S, Lx, film) {
     },
 
     aube: {
-      len: 17, wid: 6, boil: 0.8,
+      len: 17, wid: 6, boil: 0.8, chars: charsAube,
       ref(g, t, lt) {
         const { p, x: sx, y: sy } = sunA(t);
         vgrad(g, 0, 398, [[0, mix('#34505f', '#46606e', p)], [0.55, mix('#6a7c87', '#7d8a90', p)], [1, mix('#958c88', '#cf977a', p)]]);
@@ -876,15 +1034,15 @@ function makeScenes(S, Lx, film) {
           const y = 404 + i * 14, w = 18 + i * 3.4 + 10 * Math.sin(lt * 1.1 + i), x = sx + Math.sin(lt * 1.6 + i * 1.9) * (3 + i * 0.9);
           g.fillStyle = rgba([255, 118 + i * 2, 48 + i * 2], (0.5 + 0.45 * p) * (1 - i / 25)); g.fillRect(x - w / 2, y, w, 5 + i * 0.25);
         }
-        standingBoat(g, 440 + lt * 2.5, 470, 0.55);
         standingBoat(g, 990 - lt * 1.8, 438, 0.36);
-        rowBoat(g, boatX(t, S), 566 + Math.sin(t * 1.7) * 3, 1, oarPhase(t, S));
       },
       dir: (x, y, t) => y < 398 ? 0.2 * fn(x, y, t) : 0.07 * Math.sin(x * 0.02 + t * 0.8 + y * 0.05),
       lights(o, t, lt, f) {
         const { x: sx, y: sy, p } = sunA(t);
         o.globalCompositeOperation = 'lighter';
         glow(o, sx, sy, 250, [255, 110, 40], (0.45 + 0.2 * p) * f); glow(o, sx, sy, 55, [255, 190, 120], 0.9 * f);
+        { const lx = herBoatX(t) + 46 * 0.62, ly = herBoatY(t) - 30 * 0.62; glow(o, lx, ly, 40, [255, 186, 100], 0.8 * f); glow(o, lx, ly, 8, [255, 240, 200], 0.95 * f); }
+        { const w = sstep(21.6, 22.1, t) * (1 - sstep(25.6, 26.3, t)); if (w > 0) glow(o, herBoatX(t), herBoatY(t) - 40, 90, [255, 170, 180], 0.25 * w * f); }
         for (const gl of S.glints) {
           const a = t - gl.t; if (a < 0 || a > 1.1) continue;
           const k = Math.min(1, a / 0.03) * Math.exp(-a * 3.6);
@@ -909,7 +1067,7 @@ function makeScenes(S, Lx, film) {
     },
 
     jardin: {
-      len: 15, wid: 6, boil: 0.85,
+      len: 15, wid: 6, boil: 0.85, chars: charsJardin,
       ref(g, t, lt) {
         vgrad(g, 0, 290, [[0, '#27472f'], [1, '#3f683f']]);
         for (const b of Lx.leaves) ell(g, b.x + Math.sin(t * 0.7 + b.p) * 4, b.y, b.rx, b.ry, b.c, 0.85);
@@ -957,6 +1115,7 @@ function makeScenes(S, Lx, film) {
           const p = Lx.pads[bl.pad], k = Math.sin(Math.PI * a / 3);
           glow(o, p.x, p.y - 8, 90, [255, 170, 200], 0.5 * k * f);
         }
+        { const a = t - 46.4; if (a > 0 && a < 3.5) { const k = Math.sin(Math.PI * a / 3.5); glow(o, 640, deckY(640) - 45, 190, [255, 190, 205], 0.55 * k * f); glow(o, 640, deckY(640) - 40, 30, [255, 240, 230], 0.7 * k * f); } }
         o.globalCompositeOperation = 'source-over';
         for (const b of S.bass) { const a = t - b.t; if (a >= 0 && a < 2.4) { ring(o, b.x, b.y, 10 + 90 * a, (10 + 90 * a) * 0.28, [235, 240, 250], 0.45 * (1 - a / 2.4) * f); ring(o, b.x, b.y, 4 + 55 * a, (4 + 55 * a) * 0.28, [235, 240, 250], 0.35 * (1 - a / 2.4) * f); } }
         for (const b of S.birds) {
@@ -968,7 +1127,7 @@ function makeScenes(S, Lx, film) {
     },
 
     pluie: {
-      len: 14, wid: 5, boil: 0.9,
+      len: 14, wid: 5, boil: 0.9, chars: charsPluie,
       ref(g, t, lt) {
         vgrad(g, 0, 350, [[0, '#444a66'], [0.6, '#696882'], [1, '#937f88']]);
         soft(g, VP.x, VP.y, 280, [200, 150, 140], 0.4);
@@ -987,13 +1146,6 @@ function makeScenes(S, Lx, film) {
           ell(g, G.x, G.head - 8 * G.s, 11 * G.s, 16 * G.s, l > 0 ? mix([150, 110, 60], [255, 214, 130], Math.min(1, l)) : [40, 42, 56]);
           if (l > 0) soft(g, G.x, G.head, 70 * G.s, [255, 190, 110], 0.6 * l);
         }
-        const px = pedX(t), ph = ((t - 48.3) / 0.52) % 1, bob = -4 * Math.abs(Math.sin(Math.PI * ph));
-        ell(g, px, 680, 34, 8, [30, 32, 44], 0.5);
-        g.fillStyle = '#1d1f2c'; g.beginPath(); g.moveTo(px - 22, 670 + bob); g.lineTo(px - 14, 560 + bob); g.lineTo(px + 14, 560 + bob); g.lineTo(px + 22, 670 + bob); g.fill();
-        ell(g, px, 548 + bob, 9, 10, '#1d1f2c');
-        g.strokeStyle = '#1d1f2c'; g.lineWidth = 3; g.beginPath(); g.moveTo(px, 552 + bob); g.lineTo(px, 505 + bob); g.stroke();
-        g.fillStyle = '#23253a'; g.beginPath(); g.ellipse(px, 505 + bob, 62, 28, 0, Math.PI, TAU); g.fill();
-        g.fillStyle = 'rgba(28,30,44,0.45)'; g.fillRect(px - 20, 680, 40, 60);
         for (const [x0, y0, v, s] of [[560, 425, 6, 0.4], [1050, 445, -4, 0.45], [700, 395, 3, 0.25]]) {
           const x = x0 + lt * v; ell(g, x, y0 - 30 * s, 10 * s, 45 * s, '#23253a'); g.fillStyle = '#23253a'; g.beginPath(); g.ellipse(x, y0 - 80 * s, 50 * s, 22 * s, 0, Math.PI, TAU); g.fill();
         }
@@ -1010,12 +1162,14 @@ function makeScenes(S, Lx, film) {
           glow(o, G.x, G.base + 110 * G.s, 110 * G.s, [255, 170, 80], 0.28 * l * f, 2.4);
           const a = t - S.lamps[k].t - (side ? 0.15 : 0); if (a < 0.6) spark(o, G.x, G.head - 8 * G.s, 30 * G.s * (1 - a / 0.6) + 4, [255, 245, 220], (1 - a / 0.6) * f);
         }
+        glow(o, 224, 627, 80, [255, 186, 100], 0.75 * f); glow(o, 224, 627, 12, [255, 240, 200], 0.95 * f);
         o.globalCompositeOperation = 'source-over';
         for (const d of S.drips) { const a = t - d.t; if (a >= 0 && a < 1.3) { const rr = (4 + 50 * a) * d.s; ring(o, d.x, d.y, rr, rr * 0.3, [210, 214, 232], 0.6 * (1 - a / 1.3) * f, 1.6); } }
         const rr = mulberry32((t * 30) | 0);
         o.lineCap = 'round'; o.lineWidth = 1.3; o.strokeStyle = rgba([200, 208, 232], 0.16 * f);
         o.beginPath();
-        for (let i = 0; i < 260; i++) { const x = rr() * (W + 100) - 50, y = rr() * H, l = 16 + rr() * 30; o.moveTo(x, y); o.lineTo(x - l * 0.2, y + l); }
+        const nR = Math.round(260 * (1 - 0.55 * sstep(62.4, 65.2, t)));
+        for (let i = 0; i < nR; i++) { const x = rr() * (W + 100) - 50, y = rr() * H, l = 16 + rr() * 30; o.moveTo(x, y); o.lineTo(x - l * 0.2, y + l); }
         o.stroke();
         o.globalCompositeOperation = 'lighter'; o.strokeStyle = rgba([255, 200, 130], 0.3 * f); o.beginPath();
         for (let k = 0; k < 7; k++) { const l = lampLevel(k, t, 0); if (l <= 0) continue; const G = lampGeom(k, 0); for (let i = 0; i < 12; i++) { const x = G.x + (rr() - 0.5) * 150 * G.s, y = G.head + (rr() - 0.5) * 150 * G.s, ln = 14 * G.s + 6; o.moveTo(x, y); o.lineTo(x - ln * 0.2, y + ln); } }
@@ -1024,7 +1178,7 @@ function makeScenes(S, Lx, film) {
     },
 
     bal: {
-      len: 15, wid: 6, boil: 0.9,
+      len: 15, wid: 6, boil: 0.9, chars: charsBal,
       ref(g, t, lt) {
         const pulse = beatPulse(t), bp = barPh(t);
         vgrad(g, 0, 420, [[0, '#10163a'], [1, '#27315f']]);
@@ -1048,7 +1202,7 @@ function makeScenes(S, Lx, film) {
           }
         }
         const cs = Lx.couples.map((c, i) => {
-          const th = c.th + (t - B0) * 0.2, cx = 640 + 390 * c.rr * Math.cos(th), cy = 590 + 80 * c.rr * Math.sin(th);
+          const th = c.th + (t - B0) * 0.2, cx = 640 + 430 * c.rr * Math.cos(th), cy = 580 + 64 * c.rr * Math.sin(th);
           return { c, cx, cy, s: (0.75 + 0.5 * (cy - 500) / 170) * 1.5, sp: TAU * (t - B0) / (2 * BAR) + c.sp };
         }).sort((a, b) => a.cy - b.cy);
         for (const d of cs) {
@@ -1064,6 +1218,7 @@ function makeScenes(S, Lx, film) {
         const pulse = beatPulse(t), bp = barPh(t);
         o.globalCompositeOperation = 'lighter';
         glow(o, 1080, 370, 220, [255, 170, 80], 0.35 * f);
+        glow(o, 640, 628, 280, [255, 196, 140], (0.22 + 0.1 * pulse) * f);
         for (const st of Lx.strings) {
           const sw = Math.sin(TAU * bp * 0.5) * 6 * st.s;
           for (const ln of st.lan) {
@@ -1100,7 +1255,7 @@ function makeScenes(S, Lx, film) {
     },
 
     lucioles: {
-      len: 15, wid: 6, boil: 0.75,
+      len: 15, wid: 6, boil: 0.75, chars: charsBench,
       ref(g, t) { luciolesRef(g, t); },
       dir: (x, y, t) => y > 430 ? Math.PI / 2 + 0.2 * Math.sin(x * 0.03 + t * 0.9) : 0.9 * fn(x * 0.8, y * 0.8, t * 0.4) + 0.3,
       lights(o, t, lt, f) {
@@ -1119,16 +1274,18 @@ function makeScenes(S, Lx, film) {
           glow(o, x, y, 6, [250, 255, 220], Math.min(1, l * 1.3) * f);
         });
         if (t > 101.5) glow(o, 640, 432 - 95 * sstep(101.5, 112, t), 260, [255, 150, 70], 0.55 * q * f);
+        benchLight(o, t, f);
       },
     },
 
     fin: {
-      len: 16, wid: 6, boil: 0.55,
+      len: 16, wid: 6, boil: 0.55, chars: charsBench,
       ref(g, t) { luciolesRef(g, t); refTitle(g, FIN_Y, revealX(t, true), 'rgb(70,56,130)'); },
       dir: (x, y, t) => y > 430 ? Math.PI / 2 + 0.2 * Math.sin(x * 0.03 + t * 0.9) : 0.6 * fn(x * 0.8, y * 0.8, t * 0.4) + 0.2,
       lights(o, t, lt, f) {
         o.globalCompositeOperation = 'lighter';
         glow(o, 640, 432 - 95 * sstep(101.5, 112, t), 300, [255, 150, 70], 0.6 * f);
+        benchLight(o, t, f);
         letterLights(o, t, true, f, FIN_Y);
       },
     },
@@ -1143,6 +1300,7 @@ class Film {
     this.paint = mk(W, H); this.p = this.paint.getContext('2d');
     this.ref = mk(RW, RH); this.g = this.ref.getContext('2d', { willReadFrequently: true });
     this.ref2 = mk(RW, RH); this.g2 = this.ref2.getContext('2d');
+    this.det = mk(W, H); this.dg = this.det.getContext('2d', { willReadFrequently: true });
     this.small = mk(RW, RH); this.s = this.small.getContext('2d', { willReadFrequently: true });
     this.cdf = new Float32Array(RW * RH);
     this.rng = mulberry32(99); this.quality = 1; this.t = 0;
@@ -1183,11 +1341,13 @@ class Film {
     const i = sceneAt(t), sc = SCENES[i], g = this.g;
     g.setTransform(SC, 0, 0, SC, 0, 0); g.globalAlpha = 1; g.globalCompositeOperation = 'source-over';
     this.D[sc.id].ref(g, t, t - sc.t0);
+    if (this.D[sc.id].chars) this.D[sc.id].chars(g, t, t - sc.t0);
     const xf = 1.6;
     if (i > 0 && t - sc.t0 < xf) {
       const pv = SCENES[i - 1], g2 = this.g2;
       g2.setTransform(SC, 0, 0, SC, 0, 0); g2.globalAlpha = 1;
       this.D[pv.id].ref(g2, t, t - pv.t0);
+      if (this.D[pv.id].chars) this.D[pv.id].chars(g2, t, t - pv.t0);
       g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1 - sstep(0, xf, t - sc.t0); g.drawImage(this.ref2, 0, 0); g.globalAlpha = 1;
     }
     g.setTransform(1, 0, 0, 1, 0, 0);
@@ -1259,7 +1419,27 @@ class Film {
       this.stroke(((lo % RW) + R()) / SC, (((lo / RW) | 0) + R()) / SC, rd, D, bl * fine, bw * fine, t);
     }
     P.globalAlpha = 1;
+    this.detailStrokes(t, dt, D, lt);
     this.letterStrokes(t, dt);
+  }
+  detailStrokes(t, dt, D, lt) {
+    if (!D.chars) return;
+    const dg = this.dg; dg.setTransform(1, 0, 0, 1, 0, 0); dg.clearRect(0, 0, W, H);
+    const bb = D.chars(dg, t, lt);
+    const x0 = clamp(bb[0] | 0, 0, W - 1), y0 = clamp(bb[1] | 0, 0, H - 1), x1 = clamp(Math.ceil(bb[2]), x0 + 1, W), y1 = clamp(Math.ceil(bb[3]), y0 + 1, H);
+    const w = x1 - x0, h = y1 - y0, d = dg.getImageData(x0, y0, w, h).data, R = this.rng, P = this.p;
+    const n = Math.round(w * h * dt * 0.55 * this.quality);
+    P.globalAlpha = 0.92;
+    for (let k = 0; k < n; k++) {
+      const px = R() * w | 0, py = R() * h | 0, j = (py * w + px) * 4;
+      if (d[j + 3] < 150) continue;
+      const jj = (R() - 0.5) * 24;
+      const r = clamp(d[j] + jj, 0, 255) | 0, g = clamp(d[j + 1] + jj, 0, 255) | 0, b = clamp(d[j + 2] + jj, 0, 255) | 0;
+      const an = Math.PI / 2 + (R() - 0.5) * 1.2, len = 2.5 + R() * 4.5, x = x0 + px + R(), y = y0 + py + R();
+      P.strokeStyle = `rgb(${r},${g},${b})`; P.lineWidth = 1.6 + R() * 1.6;
+      P.beginPath(); P.moveTo(x - Math.cos(an) * len / 2, y - Math.sin(an) * len / 2); P.lineTo(x + Math.cos(an) * len / 2, y + Math.sin(an) * len / 2); P.stroke();
+    }
+    P.globalAlpha = 1;
   }
   seek(t) {
     t = clamp(t, 0, DUR);
@@ -1293,6 +1473,18 @@ class Film {
       o.fillStyle = `rgba(255,214,170,${0.92 * a})`; o.fillText(sc.ord.toUpperCase(), 66, 606);
       if ('letterSpacing' in o) o.letterSpacing = '0px';
       o.font = `italic 500 42px ${FD}`; o.fillStyle = `rgba(250,244,236,${0.95 * a})`; o.fillText(sc.fr, 64, 656);
+    }
+    for (const c of CARDS) {
+      const a = sstep(c.t, c.t + 0.9, t) * (1 - sstep(c.t + c.d - 0.9, c.t + c.d, t));
+      if (a <= 0) continue;
+      const y0 = c.top ? 0 : 560, y1 = c.top ? 160 : H, ty = c.top ? 70 : 638;
+      o.save(); o.shadowBlur = 0; const band = o.createLinearGradient(0, y0, 0, y1);
+      band.addColorStop(c.top ? 1 : 0, 'rgba(10,8,24,0)'); band.addColorStop(c.top ? 0 : 1, `rgba(10,8,24,${0.5 * a})`); o.fillStyle = band; o.fillRect(0, y0, W, y1 - y0); o.restore();
+      o.textAlign = 'center';
+      o.font = `italic 500 34px ${FD}`; o.fillStyle = `rgba(252,246,238,${0.96 * a})`; o.fillText(c.fr, 640, ty);
+      o.font = `400 17px ${FU}`; if ('letterSpacing' in o) o.letterSpacing = '0.6px';
+      o.fillStyle = `rgba(236,226,240,${0.86 * a})`; o.fillText(c.en, 640, ty + 32);
+      if ('letterSpacing' in o) o.letterSpacing = '0px';
     }
     const a2 = sstep(107.6, 108.8, t);
     if (a2 > 0) { o.textAlign = 'center'; o.font = `italic 500 58px ${FD}`; o.fillStyle = `rgba(44,36,96,${0.94 * a2})`; o.shadowColor = 'rgba(255,220,190,0.55)'; o.fillText('fin', 640, 330); }

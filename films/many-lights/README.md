@@ -6,23 +6,27 @@
 - **`many-lights.html`** — the film as a live player. Open it in a browser: every frame is painted in real time and the soundtrack is synthesized on load.
 - **`render.cjs`** — renders the HTML to MP4, frame-exact, through headless Chromium and ffmpeg.
 
-## Chapters
+## The story
+
+A love story in five lights, told in silent-film title cards (French, with English beneath). He wears a navy coat and a straw boater; she wears rose, with a white hat. A small lantern follows them through their life.
 
 | | | |
 |---|---|---|
-| 0:08 | I. *Aube* | Dawn over the harbour at Le Havre. A rower's oar strokes splash and creak; each glint of the sun on the water sounds a felt-piano note, higher toward the horizon. |
-| 0:28 | II. *Le jardin d'eau* | Noon under the Japanese bridge. A harp plays in 6/8; every note flashes on the water, placed left to right by pitch. Lilies open on the chord changes and birds chirp as they cross. |
-| 0:48 | III. *Pluie sur le boulevard* | Evening rain. The gas lamps light in pairs down the street, each with a bell, and each puddle ripple is a water drop. A passer-by's wet footsteps keep pace with their walk. |
-| 1:06 | IV. *Le bal* | A musette waltz in D. The lanterns pulse on the downbeat, the dancers turn once every two bars, and the last bars end in fireworks, each with its own whistle, boom and crackle. |
-| 1:26 | V. *Lucioles* | Crickets and an owl. Each firefly blink is a glass note. The fireflies rise and become stars, then dawn returns and the title is painted once more. |
+| 0:08 | I. *Aube* | *Every morning, he rowed out toward the sun.* At Le Havre, a woman in rose on another boat, with a lantern at the bow, waves back. Their theme is heard for the first time, on piano. |
+| 0:28 | II. *Le jardin d'eau* | *She showed him where the water lilies open.* They walk toward each other across the Japanese bridge as a harp plays. A violin takes up their theme, and they meet in the middle as the harp resolves. |
+| 0:48 | III. *Pluie sur le boulevard* | *That evening, she waited for him under the first lamp.* She holds her lantern while he walks down the boulevard in the rain; a cello plays the theme in a minor key. *He had brought an umbrella.* The church bell rings as he reaches her, and the rain eases. |
+| 1:06 | IV. *Le bal* | *And they danced until the sky caught fire.* They waltz in a warm spotlight to a musette waltz built on their theme, and the waltz ends in fireworks. |
+| 1:26 | V. *Lucioles* | *Many years later, they still came to count the fireflies.* Grey-haired, they sit on a bench with the same lantern, and she rests her head on his shoulder as the cello plays the theme again. The fireflies rise and become stars. *Every light we have loved is still shining.* Dawn comes, the piano plays the theme one last time, and the title is painted again. |
+
+Throughout, every sound matches something on screen: glints on the water, oar strokes, harp notes, lamps, footsteps, lantern beats, firework bursts and firefly blinks.
 
 ## How it works
 
 One score (`buildScore`) drives both picture and sound, so they are synchronized by construction.
 
-**Picture.** Each scene is drawn as a crude 256×144 sketch. A painter samples it with ~1,000 short, curved brush strokes per frame on a persistent 1280×720 canvas. Stroke direction follows a per-scene flow field (horizontal on water, vertical in rain, swirling in the night sky). Colour is "broken", with jittered value and complementary accents. Strokes are weighted toward places where the canvas differs from the sketch, so moving things stay defined while still areas keep their brushwork. Lights (sun, glints, lamps, lanterns, fireflies, fireworks) are added as additive glows. A canvas-weave grain and a vignette finish each frame.
+**Picture.** Each scene is drawn as a crude 256×144 sketch. A painter samples it with ~1,000 short, curved brush strokes per frame on a persistent 1280×720 canvas. Stroke direction follows a per-scene flow field (horizontal on water, vertical in rain, swirling in the night sky). Colour is "broken", with jittered value and complementary accents. Strokes are weighted toward places where the canvas differs from the sketch, so moving things stay defined while still areas keep their brushwork. Lights (sun, glints, lamps, lanterns, fireflies, fireworks) are added as additive glows. The two characters are also painted with a separate pass of small strokes from a full-resolution drawing, so they stay readable as they move. A canvas-weave grain and a vignette finish each frame.
 
-**Sound.** A small synthesizer in plain JavaScript: Karplus-Strong harp and guitar, an additive felt piano with inharmonic partials, a three-reed musette accordion, Risset-style church bells, bowed-string pads, and filtered-noise textures for wind, water, rain, murmur and crickets. It all runs through a Freeverb-style reverb and a soft limiter. The whole 112-second mix renders in about six seconds.
+**Sound.** A small synthesizer in plain JavaScript: Karplus-Strong harp and guitar, a bowed voice for the violin and cello, an additive felt piano with inharmonic partials, a three-reed musette accordion, Risset-style church bells, bowed-string pads, and filtered-noise textures for wind, water, rain, murmur and crickets. It all runs through a Freeverb-style reverb and a soft limiter. The whole 112-second mix renders in about six seconds.
 
 ## Re-rendering
 
